@@ -1,0 +1,14 @@
+torch
+torchvision
+numpy
+pandas
+transformers
+safetensors
+accelerate
+opencv-python-headless
+matplotlib
+seaborn
+scikit-learn
+streamlit
+boto3
+Pillow

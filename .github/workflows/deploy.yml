@@ -1,0 +1,33 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/ec2_key.pem
+          chmod 600 ~/.ssh/ec2_key.pem
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            cd ~/Bank-Term-Deposit-Subscription-Prediction
+            git pull origin main
+            source venv/bin/activate
+            pip install -r requirements.txt
+            aws s3 cp s3://${{ secrets.S3_BUCKET }}/models/model_for_inference models/model_for_inference --no-sign-request
+            nohup streamlit run app.py --server.port 8501 --server.address 0.0.0.0 > app.log 2>&1 &
+          EOF
+
+
