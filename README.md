@@ -121,7 +121,7 @@ The workflow automatically deploys updates from GitHub to EC2.
 ### **GitHub Actions Workflow (`deploy.yml`):**
 
 ```yaml
-name: Deploy COVID-19 Detector to AWS EC2
+name: Deploy to EC2
 
 on:
   push:
@@ -136,43 +136,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies
+      - name: Set up SSH
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/ec2_key.pem
+          chmod 600 ~/.ssh/ec2_key.pem
 
       - name: Deploy to EC2
-        env:
-          AWS_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ubuntu
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ap-south-1
-          S3_BUCKET: your-s3-bucket-name
         run: |
-          echo "$AWS_SSH_KEY" > private_key.pem
-          chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_HOST "
-            echo '🚀 Starting COVID-19 App Deployment...'
-            sudo apt-get update -y &&
-            sudo apt-get install -y unzip awscli python3-pip &&
-            rm -rf ~/covid19-detector &&
-            mkdir ~/covid19-detector &&
-            cd ~/covid19-detector &&
-            git clone https://github.com/${{ github.repository }} . &&
-            aws s3 cp s3://$S3_BUCKET/models/ ./models/ --recursive &&
-            pip install --upgrade pip &&
-            pip install -r requirements.txt &&
-            pkill -f streamlit || true &&
-            nohup streamlit run app.py --server.port 8501 > app.log 2>&1 &
-            echo '✅ Deployment Successful! Running on port 8501.'
-          "
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            cd ~/Bank-Term-Deposit-Subscription-Prediction
+            git pull origin main
+            source venv/bin/activate
+            pip install -r requirements.txt
+            aws s3 cp s3://${{ secrets.S3_BUCKET }}/models/model_for_inference models/model_for_inference --no-sign-request
+            nohup streamlit run app.py --server.port 8501 --server.address 0.0.0.0 > app.log 2>&1 &
+          EOF
 ```
 
 ---
@@ -213,3 +192,4 @@ Released under the **MIT License** — free to use, modify, and distribute with 
 ---
 
 ⭐ **If you find this project useful, please give it a star on GitHub!**
+
