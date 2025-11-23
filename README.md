@@ -145,7 +145,7 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd ~/Bank-Term-Deposit-Subscription-Prediction
+            cd ~/SachinMosambe/Multi-class-COVID-19-Detection-from-Chest-X-ray-Images
             git pull origin main
             source venv/bin/activate
             pip install -r requirements.txt
@@ -177,6 +177,10 @@ jobs:
 
 ---
 
+
+## Link to deployed app:
+http://3.7.46.231:8501/
+
 ## 👨‍💻 Author
 
 **Sachin Dattatraay Mosambe**
@@ -192,4 +196,5 @@ Released under the **MIT License** — free to use, modify, and distribute with 
 ---
 
 ⭐ **If you find this project useful, please give it a star on GitHub!**
+
 
