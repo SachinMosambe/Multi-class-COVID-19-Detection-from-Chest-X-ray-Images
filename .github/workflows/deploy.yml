@@ -22,23 +22,10 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            # correct project directory
             cd ~/Multi-class-COVID-19-Detection-from-Chest-X-ray-Images
-
-            # activate correct venv
-            source ~/venv/bin/activate
-
-            # pull latest code
             git pull origin main
-
-            # install dependencies
-            pip install -r requirements.txt --no-cache-dir
-
-            # download model correctly
-            mkdir -p models
-            aws s3 cp s3://bank-term-model-bucket/models/model_for_inference.pth models/model_for_inference.pth
-
-            # restart streamlit
-            pkill -f streamlit || true
+            source venv/bin/activate
+            pip install -r requirements.txt
+            aws s3 cp s3://${{ secrets.S3_BUCKET }}/model_for_inference.pth models/model_for_inference.pth --no-sign-request
             nohup streamlit run app.py --server.port 8501 --server.address 0.0.0.0 > app.log 2>&1 &
           EOF
