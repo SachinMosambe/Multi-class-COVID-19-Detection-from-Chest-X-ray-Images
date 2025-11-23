@@ -16,8 +16,13 @@ from pathlib import Path
 # =====================================================================
 # AWS S3 Configuration
 # =====================================================================
-S3_BUCKET_NAME = "bank-term-model-bucket" 
-S3_MODEL_KEY = "models/model_for_inference.pth" 
+S3_BUCKET_NAME = "bank-term-model-bucket"
+S3_MODEL_KEY = "models/model_for_inference.pth"
+
+# Local path where model will be saved
+LOCAL_MODEL_PATH = "models/model_for_inference.pth"
+
+os.makedirs("models", exist_ok=True)
 
 # =====================================================================
 # Download Model from S3
