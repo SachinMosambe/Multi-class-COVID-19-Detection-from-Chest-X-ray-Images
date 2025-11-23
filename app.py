@@ -16,9 +16,8 @@ from pathlib import Path
 # =====================================================================
 # AWS S3 Configuration
 # =====================================================================
-S3_BUCKET_NAME = "your-bucket-name"  # Replace with your S3 bucket name
-S3_MODEL_KEY = "models/model_for_inference.pth"  # Path to model in S3
-LOCAL_MODEL_PATH = "/tmp/model_for_inference.pth"  # Temporary local path
+S3_BUCKET_NAME = "bank-term-model-bucket" 
+S3_MODEL_KEY = "models/model_for_inference.pth" 
 
 # =====================================================================
 # Download Model from S3
