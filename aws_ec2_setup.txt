@@ -1,0 +1,7 @@
+sudo apt update && sudo apt install python3-pip git -y
+git clone https://github.com/SachinMosambe/Multi-class COVID-19 Detection from Chest X-ray Images.git
+cd Multi-class COVID-19 Detection from Chest X-ray Images
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+nohup streamlit run app.py --server.port 8501 --server.address 0.0.0.0 &
